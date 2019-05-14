@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,25 +6,38 @@ using System.Threading.Tasks;
 
 namespace Ex02_Othelo
 {
-    class Player
+    class Game
     {
-        private bool IsComputer = true;
-        private string m_PlayerName;
-        private int m_PlayerScore;
-
-        public Player(String i_PlayerName)
+        public Player[] m_Players;
+        public Board m_boardGame;
+        public bool m_AgainstComputer;
+   
+        public Game(int i_BoardSize, string i_ChosenGameState)
         {
-            m_PlayerName = i_PlayerName;
+            m_Players = new Player[2];
+            m_boardGame = new Board(i_BoardSize);
+            if (i_ChosenGameState == "P")
+            {
+                m_AgainstComputer = false;
+            }
+            else
+            {
+                m_AgainstComputer = true;
+            }
+
         }
-
-        public int CurrentScore
+        public void AddPlayer(int i_Index, string i_PlayerName, string i_PlayerSign)
         {
-            get { return m_PlayerScore; }
-            set { m_PlayerScore = value; }
-        } 
+            m_Players[i_Index] = new Player(i_PlayerName, i_PlayerSign);
+        }
+        public void PlayerVsComputer()
+        {
 
-        
 
 
+
+        }
     }
 }
+
+
