@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,29 +8,32 @@ namespace Ex02_Othelo
 {
     class Board
     {
-        private int m_Size;
+        private static readonly string sr_Empty = " ";
+        private static readonly string sr_Black = "X";
+        private static readonly string sr_White = "O";
+
         private string[,] m_Board;
         private int m_CountBlack;
         private int m_CountWhite;
         private int m_CountEmpty;
 
-
+        
         public Board(int i_Size) //constructor
         {
-            m_Size = i_Size;
-            m_Board = new string[m_Size, m_Size];
-            for (int i = 0; i < m_Size; i++)
+            
+            m_Board = new string[i_Size, i_Size];
+            for (int i = 0; i < i_Size; i++)
             {
-                for (int j = 0; j < m_Size; j++)
+                for (int j = 0; j < i_Size; j++)
                 {
                     m_Board[i, j] = " ";
                 }
             }
 
-            m_Board[m_Size / 2 - 1, m_Size / 2 - 1] = "O";
-            m_Board[m_Size / 2 - 1, m_Size / 2] = "X";
-            m_Board[m_Size / 2, m_Size / 2 - 1] = "X";
-            m_Board[m_Size / 2, m_Size / 2] = "O";
+            m_Board[i_Size / 2 - 1, i_Size / 2 - 1] = "O";
+            m_Board[i_Size / 2 - 1, i_Size / 2] = "X";
+            m_Board[i_Size / 2, i_Size / 2 - 1] = "X";
+            m_Board[i_Size / 2, i_Size / 2] = "O";
         }
 
         public int CountBlack
@@ -51,50 +54,82 @@ namespace Ex02_Othelo
             set { m_CountWhite = value; }
         }
 
-
-        public void PrintBoard()
+        public string[,] ScreenBoard
         {
-            Console.Write("      ");
-            for (int i = 0; i < m_Size; i++)
-            {
-                char c = Convert.ToChar('A' + i);
-                Console.Write(c + "     ");
-            }
-
-            Console.WriteLine();
-            Console.Write("   ");
-            for (int i = 0; i < m_Size; i++)
-            {
-                Console.Write("======");
-            }
-            Console.WriteLine("=");
-
-            for (int i = 0; i < m_Size; i++)
-            {
-                Console.Write(i + 1);
-                for (int j = 0; j < m_Size; j++)
-                {
-                    Console.Write("  |  ");
-                    Console.Write(m_Board[i, j]);
-                }
-
-                Console.WriteLine("  |");
-                Console.Write("   ");
-                for (int k = 0; k < m_Size; k++)
-                {
-                    Console.Write("======");
-                }
-                Console.WriteLine("=");
-            }
+            get { return m_Board; }
+            set { m_Board = value; }
         }
-
-        public void UpdateBoard() //TODO: implementaion
-        {
-           
-        }
-
         
+        public bool IsValidMove(Player i_CurrentPlayer, int i_Row, int i_Col)
+        {
+            bool IsValid = true;
+
+            if (this.m_Board[i_Row, i_Col] != sr_Empty)
+                IsValid = false;
+
+            else
+            {
+                for (int i = -1; i <= 1; i++)
+                {
+                    for (int j = -1; j <= 1; j++)
+                    {
+                        if (!(i == i_Row) && (j == i_Col) && hasPossibleToFlip(i_CurrentPlayer, i_Row , i_Col, i, j))
+                            IsValid = true;
+                    }
+                }
+            }
+           
+            return IsValid;
+        }
+
+        //Check if any opponent discs on a given path
+        private bool hasPossibleToFlip(Player i_Player, int i_Row, int i_Col, int i_DirectionRow, int i_DirectionCol)
+        {
+            bool IsPossible = true;
+
+            int RowToCheck = i_Row + i_DirectionRow;
+            int ColToCheck = i_Col + i_DirectionCol;
+
+            while(RowToCheck >= 0 && RowToCheck<=this.m_Board.GetLength(0) && ColToCheck >=0 && 
+                ColToCheck<= this.m_Board.GetLength(0) && (this.m_Board[RowToCheck, ColToCheck] == i_Player.GetOpponentSign()))
+            {
+
+                RowToCheck += i_DirectionRow;
+                ColToCheck += i_DirectionCol;
+            }
+             
+            if(RowToCheck < 0 || RowToCheck > this.m_Board.GetLength(0)-1 || ColToCheck < 0 || 
+                ColToCheck > this.m_Board.GetLength(0) - 1 || (RowToCheck - i_DirectionRow == i_Row && ColToCheck - i_DirectionCol == i_Col) ||
+                this.m_Board[RowToCheck,ColToCheck] != i_Player.Sign)
+            {
+                IsPossible = false;
+            }
+
+                return IsPossible;
+        }
 
 
+        public void UpdateBoardState(Player i_Player, int i_Row, int i_Col) //TODO: implementaion
+        {
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if(hasPossibleToFlip(i_Player, i_Row, i_Col, i, j))
+                    {
+                        int RowToChange = i_Row + i;
+                        int ColToChange = i_Col + j;
+
+                        while (this.m_Board[RowToChange, ColToChange] != i_Player.Sign)
+                        {
+                            this.m_Board[RowToChange, ColToChange] = i_Player.Sign;
+                            RowToChange = i_Row + i;
+                            ColToChange = i_Col + j;
+                        }
+                    }
+                }
+            }
+
+        }
     }
 }
