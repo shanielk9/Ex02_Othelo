@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,9 +10,9 @@ namespace Ex02_Othelo
     {
         public static void Main()
         {
-            UI newGame = new UI();
+            UI.UIGame newGame = new UI.UIGame();
             newGame.RunMenu();
         }
-        
+
     }
 }
